@@ -37,3 +37,5 @@ def waiting():
 
 if __name__ == '__main__':
     app.run()
+
+# TODO: Fix ffmpeg not working and fix error during download: FileNotFoundError: [Errno 2] No such file or directory: 'not_downloaded/kunne_ikke_downloade.txt'
