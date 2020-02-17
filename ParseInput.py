@@ -220,7 +220,7 @@ def download_interval(interval_list):
                 except ffmpeg._run.Error as e:
                     print(f"An error occurred e 1: {e}")
         except Exception:
-            with open(os.path.join("Not downloaded", "kunne_ikke_downloade.txt"), 'a') as f:
+            with open(os.path.join("not_downloaded", "kunne_ikke_downloade.txt"), 'a') as f:
                 f.write(f"I couldn't download {interval_list[link]}")
 
 # Use this in the ffmpeg.run() command when compiling using pyinstaller. It's the path to ffmpeg.
