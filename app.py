@@ -9,7 +9,6 @@ app.secret_key = "supposed to be a secret"
 
 @app.route('/')
 def index():
-    print(os.listdir())
     return render_template('index.html')
 
 @app.route('/downloading', methods=['POST', 'GET'])
