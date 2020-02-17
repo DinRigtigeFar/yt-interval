@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="../static/style.css" />
+    <link rel='shortcut icon' type='image/x-icon' href='../static/YTDL7.png' />
+    <title>Youtube downloader</title>
+  </head>
+  <body>
+    <div class="container">
+      <img src="../static/YTDL7.png" alt="YTDL logo" class="logo" />
+      <form action="/waiting" method="POST">
+        <div class="form-group">
+          <h3>Done parsing your input. Click below to redirect and see.</h3>
+          <body>
+            Found the following whole youtube links:
+            {% for i in session["whole_clip"] if session["whole_clip"] | length > 0 %}
+            <h4>{{i}}</h4>
+            {% else %}
+            <h4>No whole clip links</h4>
+            {% endfor %}
+            And the following interval links:
+            {% for i in session["intervals"] if session["intervals"] | length > 0 %}
+            <h4>{{i}}</h4>
+            {% else %}
+            <h4>No interval links</h4>
+            {% endfor %}
+          </body>
+        </div>
+        <input type="submit" value="Redirect to the funhouse (may take some time since I have to download all of your videoes!)" class="btn" />
+      </form>
+      <form action="/">
+        <input type="submit" value="Back to the front page" class="btn">
+      </form>
+    </div>
+  </body>
+</html>
