@@ -26,6 +26,7 @@ def downloading():
 def waiting():
     # Downloads the videos
     download_interval(session.get("intervals"))
+    download_whole(session.get("whole_clip"))
     # Packages content of media directory into a zip file that is sent to the user
     with zipfile.ZipFile('videos.zip','w', zipfile.ZIP_DEFLATED) as zF:
         for video in os.listdir('media/'):

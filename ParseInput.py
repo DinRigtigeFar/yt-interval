@@ -4,18 +4,17 @@ import re
 import os
 import youtube_dl
 import datetime
-#import PySimpleGUI as sg
 import ffmpeg
 import pafy
 import sys
 import requests
 
-def resource_path(relative_path):
-    """
+"""def resource_path(relative_path):
+    
     Get absolute path to resource, works for dev and for PyInstaller
     Need it for path of ffmpeg
     Pass the relative path to ffmpeg (ffmpeg/ffmpeg) in the download interval function
-    """
+    
     try:
         # This is the path to the script
         base_path = sys.argv[0]
@@ -26,7 +25,7 @@ def resource_path(relative_path):
     except AttributeError:
         base_path = os.path.abspath(".")
 
-    return os.path.join(base_path, relative_path)
+    return os.path.join(base_path, relative_path)"""
 
 
 def parser(list_of_text):
@@ -36,13 +35,17 @@ def parser(list_of_text):
 
     # Youtube link regex
     yt_link = re.compile(r"http(s)?:\/\/www\.youtu.*")
+    pron_link = re.compile(r".*pornhub.*")
     pic_link = re.compile(r"^http(s)?:\/\/.*jpg.*")
 
     pics = [link.split() for link in list_of_text if re.match(pic_link, link)]
 
     found_yt_links = [line.split() for line in list_of_text if re.match(yt_link, line)]
+    found_pron = [line.split() for line in list_of_text if re.match(pron_link, line)]
+    
+    joined_links = found_yt_links + found_pron
 
-    return found_yt_links, pics
+    return joined_links, pics
 
 def hasNumbers(inputString):
     """
@@ -161,16 +164,20 @@ def download_whole(no_interval):
     Downloaded to the same place where yt_vids is saved to (from save_link_time func)
     """
     print(os.getcwd())
-    ydl_opts = {"nocheckcertificate": True, "noplaylist": True, "outtmpl": "media"}
+    SAVE_PATH = 'media'
+    ydl_opts = {"nocheckcertificate": True, "noplaylist": True, 'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s'}
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        print("In with")
         for video in range(len(no_interval)):
-            #sg.OneLineProgressMeter("Download progress", video+1, len(no_interval), "key", "Whole video download progress")
+            print("In for")
             try:
+                print("In try")
                 ydl.download([no_interval[video]])
             except youtube_dl.utils.ExtractorError or youtube_dl.utils.DownloadError:
+                print("In except")
                 print(f"Couldn't download {no_interval[video]}")
-                pass
+                continue
 
 
 def download_interval(interval_list):
@@ -182,7 +189,6 @@ def download_interval(interval_list):
     for link in range(len(interval_list)):
         try:
             video = pafy.new(interval_list[link][0], ydl_opts={'nocheckcertificate': True, "noplaylist": True})
-            #sg.OneLineProgressMeter("Download progress", link + 1, len(interval_list), "key", "Interval video download progress")
             # Only downloads the video if the video hasn't been downloaded before
             if not os.path.exists(os.path.join("media", f"{video.title}.mp4")):
                 video_s = video.getbestvideo()
@@ -220,10 +226,7 @@ def download_interval(interval_list):
                 except ffmpeg._run.Error as e:
                     print(f"An error occurred e 1: {e}")
         except Exception as e:
-            return (f"I couldn't download {interval_list[link]} due to: {e}")
-
-# Use this in the ffmpeg.run() command when compiling using pyinstaller. It's the path to ffmpeg.
-# cmd=resource_path('ffmpeg/ffmpeg')
+            print(f"I couldn't download {interval_list[link]} due to: {e}")
 
 
 def download_pics(pics_links, path_to_download):
@@ -232,9 +235,7 @@ def download_pics(pics_links, path_to_download):
     """
 
     for link in range(len(pics_links)):
-        sg.OneLineProgressMeter("Download progress", link + 1, len(pics_links), "key", "Picture download progress")
         r = requests.get(pics_links[link][0])
-
         with open(os.path.join(path_to_download, f"{link}.jpg"), "wb") as dl:
             dl.write(r.content)
 
