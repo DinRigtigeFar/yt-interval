@@ -41,7 +41,7 @@ def waiting():
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
         for video in os.listdir('media/'):
             zF.write('media/'+video)
-    return make_response(os.listdir("media"))
+    return make_response(tuple(os.listdir("media")))
     
     """send_file('media.zip',
             mimetype = 'zip',

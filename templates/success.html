@@ -13,7 +13,8 @@
       <img src="../static/YTDL7.png" alt="YTDL logo" class="logo" />
       <form action="/waiting" method="POST">
         <div class="form-group">
-          <h3>Done parsing your input. Click below to redirect and see.</h3>
+          <h3>Done parsing your input. To download click the button.</h3>
+          <h4>(It may take some time do download since it has to process the video. Just hang in there.)</h4>
           <body>
             Found the following whole youtube links:
             {% for i in session["whole_clip"] if session["whole_clip"] | length > 0 %}
