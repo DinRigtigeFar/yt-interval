@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, make_response, session, redir
 from ParseInput import parser, make_time, download_whole, download_interval, download_pics
 import os
 import zipfile
+from rq import Queue
+from worker import conn
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
@@ -29,8 +31,10 @@ def downloading():
 
 @app.route('/waiting', methods=['POST'])
 def waiting():
+    # Make a queue for the lengthy ffmpeg process
+    q = Queue(connection=conn)
     # Downloads the videos
-    download_interval(session.get("intervals"))
+    q.enqueue(download_interval,session.get("intervals"))
     download_whole(session.get("whole_clip"))
     download_pics(session.get("pics"))
     # Packages content of media directory into a zip file that is sent to the user
