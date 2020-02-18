@@ -25,8 +25,9 @@ def downloading():
 @app.route('/waiting', methods=['POST'])
 def waiting():
     # Downloads the videos
-    download_interval(session.get("intervals"))
+    error = download_interval(session.get("intervals"))
     # Packages content of media directory into a zip file that is sent to the user
+    return make_response(error)
     with zipfile.ZipFile('videos.zip','w', zipfile.ZIP_DEFLATED) as zF:
         for video in os.listdir('media/'):
             zF.write('media/'+video)
