@@ -225,14 +225,14 @@ def download_interval(interval_list):
             print(f"I couldn't download {interval_list[link]} due to: {e}")
 
 
-def download_pics(pics_links, path_to_download):
+def download_pics(pics_links):
     """
     Function to download pictures from the input sequence
     """
 
     for link in range(len(pics_links)):
         r = requests.get(pics_links[link][0])
-        with open(os.path.join(path_to_download, f"{link}.jpg"), "wb") as dl:
+        with open(os.path.join("media", f"{link}.jpg"), "wb") as dl:
             dl.write(r.content)
 
 

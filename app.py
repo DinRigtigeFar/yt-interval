@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, make_response, session, redirect, url_for, send_file
-from ParseInput import parser, make_time, download_whole, download_interval
+from ParseInput import parser, make_time, download_whole, download_interval, download_pics
 import os
 import zipfile
 
@@ -17,9 +17,14 @@ def downloading():
         comments = request.form['comments']
         comments_2 = [comment.strip() for comment in comments.split('\n')]
         # Only get the video part of the parsed file ([0])
-        made_time = make_time(parser(comments_2)[0])
-        session["whole_clip"] = made_time[1]
+        parsed = parser(comments_2)
+        made_time = make_time(parsed[0])
         session["intervals"] = made_time[0]
+        session["whole_clip"] = made_time[1]
+        session["pics"] = parsed[1]
+
+        if len(session["whole_clip"]) == 0 and len(session["intervals"]) == 0 and len(session["pics"]) == 0:
+            return render_template('index.html', message="Please input a valid link: youtube.com/blabla, youtu.be/blabla some.thing/jpg")
         return render_template('success.html')
 
 @app.route('/waiting', methods=['POST'])
@@ -27,13 +32,14 @@ def waiting():
     # Downloads the videos
     download_interval(session.get("intervals"))
     download_whole(session.get("whole_clip"))
+    download_pics(session.get("pics"))
     # Packages content of media directory into a zip file that is sent to the user
-    with zipfile.ZipFile('videos.zip','w', zipfile.ZIP_DEFLATED) as zF:
+    with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
         for video in os.listdir('media/'):
             zF.write('media/'+video)
-    return send_file('videos.zip',
+    return send_file('media.zip',
             mimetype = 'zip',
-            attachment_filename= 'videos.zip',
+            attachment_filename= 'media.zip',
             as_attachment = True)
 
 if __name__ == '__main__':

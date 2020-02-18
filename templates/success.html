@@ -27,6 +27,12 @@
             {% else %}
             <h4>No interval links</h4>
             {% endfor %}
+            And the following jpg links:
+            {% for i in session["pics"] if session["pics"] | length > 0 %}
+            <h4>{{i[0]}}</h4>
+            {% else %}
+            <h4>No interval links</h4>
+            {% endfor %}
           </body>
         </div>
         <input type="submit" value="Redirect to the funhouse (may take some time since I have to download all of your videoes!)" class="btn" />
