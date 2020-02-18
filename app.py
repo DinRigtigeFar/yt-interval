@@ -41,10 +41,12 @@ def waiting():
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
         for video in os.listdir('media/'):
             zF.write('media/'+video)
-    return send_file('media.zip',
+    return make_response(os.walk("."))
+    
+    """send_file('media.zip',
             mimetype = 'zip',
             attachment_filename= 'media.zip',
-            as_attachment = True)
+            as_attachment = True)"""
 
 if __name__ == '__main__':
     app.run()
