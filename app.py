@@ -24,10 +24,8 @@ def downloading():
 
 @app.route('/waiting', methods=['POST'])
 def waiting():
-    print(os.listdir())
-    print(os.getcwd())
     # Downloads the videos
-    #download_interval(session.get("intervals"))
+    download_interval(session.get("intervals"))
     # Packages content of media directory into a zip file that is sent to the user
     with zipfile.ZipFile('videos.zip','w', zipfile.ZIP_DEFLATED) as zF:
         for video in os.listdir('media/'):
@@ -39,6 +37,3 @@ def waiting():
 
 if __name__ == '__main__':
     app.run()
-
-# TODO: FIND OUT WHERE THE FUCK WE ARE WHEN RUNNING!!!!
-# TODO: Fix ffmpeg not working and fix error during download: FileNotFoundError: [Errno 2] No such file or directory: 'not_downloaded/kunne_ikke_downloade.txt'
