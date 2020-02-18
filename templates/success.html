@@ -23,7 +23,7 @@
             {% endfor %}
             And the following interval links:
             {% for i in session["intervals"] if session["intervals"] | length > 0 %}
-            <h4>{{i}}</h4>
+            <h4>{{i[0]}} {{i[1]}}</h4>
             {% else %}
             <h4>No interval links</h4>
             {% endfor %}
@@ -34,6 +34,11 @@
       <form action="/">
         <input type="submit" value="Back to the front page" class="btn">
       </form>
+    </div>
+    <div class="container">
+      <body>
+        Created by Christian Hviid Friis. For inquiries/problems <a href="mailto:friis93@me.com?subject=yt-interval problems">email me!</a>
+      </body>
     </div>
   </body>
 </html>

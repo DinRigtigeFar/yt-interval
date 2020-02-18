@@ -168,14 +168,10 @@ def download_whole(no_interval):
     ydl_opts = {"nocheckcertificate": True, "noplaylist": True, 'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s'}
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        print("In with")
         for video in range(len(no_interval)):
-            print("In for")
             try:
-                print("In try")
                 ydl.download([no_interval[video]])
             except youtube_dl.utils.ExtractorError or youtube_dl.utils.DownloadError:
-                print("In except")
                 print(f"Couldn't download {no_interval[video]}")
                 continue
 
