@@ -31,24 +31,6 @@ def downloading():
             return render_template('index.html', message="Please input a valid link: youtube.com/blabla, youtu.be/blabla some.thing/jpg")
         return render_template('success.html')
 
-"""def holdup(queue_object):
-    print(f"I'm in holdup and the amount of jobs running is {len(queue_object)}")
-    print(f"This is the media directory: {os.listdir('media/')}")
-    if len(queue_object) == 0:
-        # Packages content of media directory into a zip file that is sent to the user
-        with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
-            for video in os.listdir('media/'):
-                zF.write('media/'+video)
-        return send_file('media.zip',
-                mimetype = 'zip',
-                attachment_filename= 'media.zip',
-                as_attachment = True)
-    else:
-        # Wait for 20 seconds and check again
-        print(len(queue_object))
-        sleep(20)
-        holdup(queue_object)"""
-
 @app.route('/waiting', methods=['POST'])
 def waiting():
     # Make a queue for the lengthy ffmpeg process (and others to make sure)
@@ -57,27 +39,29 @@ def waiting():
     # Downloads the media (no need to call if empty)
     if len(session.get("intervals")) > 0:
         interval = q.enqueue(download_interval, session.get("intervals"))
+        session["interval_id"] = interval.id
     if len(session.get("whole_clip")) > 0:
         whole_clip = q.enqueue(download_whole, session.get("whole_clip"))
+        session["whole_clip_id"] = whole_clip.id
     if len(session.get("pics")) > 0:
         pics = q.enqueue(download_pics, session.get("pics"))
-    job = Job.fetch(interval.id, connection=conn)
-
-    print(f"This is the job status: {job.get_status()}")
+        session["pics_id"] = pics.id
     
-    """while interval.result is None:
-        print(f"I'm in waitng and this is the amount of jobs running {len(q)}")
-        sleep(20)
+    return render_template("waiting.html")
+
+@app.route('waiting/done')
+def done():
+    # Gets the status of the intervals job
+    while Job.fetch(session.get("interval_id"), connection=conn) != "finished":
+        sleep(10)
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
             for video in os.listdir('media/'):
                 zF.write('media/'+video)
     return send_file('media.zip',
             mimetype = 'zip',
             attachment_filename= 'media.zip',
-            as_attachment = True)"""
+            as_attachment = True)
 
-    #return render_template("waiting.html")
-    
     # TODO: Find out how to wait for the worker to get done before returning the contents of the media directory!!!!
 
 
