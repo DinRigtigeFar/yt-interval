@@ -30,9 +30,10 @@ def downloading():
             return render_template('index.html', message="Please input a valid link: youtube.com/blabla, youtu.be/blabla some.thing/jpg")
         return render_template('success.html')
 
-def holdup(queue_object):
+"""def holdup(queue_object):
     print(f"I'm in holdup and the amount of jobs running is {len(queue_object)}")
-    if len(queue_object) == 0 and len(os.listdir("media")) != 0:
+    print(f"This is the media directory: {os.listdir('media/')}")
+    if len(queue_object) == 0:
         # Packages content of media directory into a zip file that is sent to the user
         with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
             for video in os.listdir('media/'):
@@ -45,7 +46,7 @@ def holdup(queue_object):
         # Wait for 20 seconds and check again
         print(len(queue_object))
         sleep(20)
-        holdup(queue_object)
+        holdup(queue_object)"""
 
 @app.route('/waiting', methods=['POST'])
 def waiting():
@@ -59,9 +60,16 @@ def waiting():
         q.enqueue(download_whole, session.get("whole_clip"))
     if len(session.get("pics")) > 0:
         q.enqueue(download_pics, session.get("pics"))
-    sleep(10)
-    print(f"I'm in waitng and this is the amount of jobs running {len(q)}")
-    return holdup(q)
+    while q.result is None:
+        print(f"I'm in waitng and this is the amount of jobs running {len(q)}")
+        sleep(20)
+    with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
+            for video in os.listdir('media/'):
+                zF.write('media/'+video)
+    return send_file('media.zip',
+            mimetype = 'zip',
+            attachment_filename= 'media.zip',
+            as_attachment = True)
 
     #return render_template("waiting.html")
     
