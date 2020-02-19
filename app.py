@@ -47,18 +47,18 @@ def waiting():
         pics = q.enqueue(download_pics, session.get("pics"))
         session["pics_id"] = pics.id
     sleep(20)
-    return render_template("waiting.html", message=f"{Job.fetch(session.get('interval_id'), connection=conn)}")
+    return render_template("waiting.html", message=f"{Job.fetch(interval.id, connection=conn)}")
 
-def check_content():
+"""def check_content():
     if len(os.listdir('media/')) == len(session.get("interval_id")) + 1:
         return
     else:
         sleep(15)
-        check_content()
+        check_content()"""
 
 @app.route('/waiting/done', methods=['GET'])
 def done():
-    check_content()
+    #check_content()
     # Returns the content of the media directory
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
             for video in os.listdir('media/'):
@@ -69,6 +69,7 @@ def done():
             as_attachment = True)
 
     # TODO: Find out how to wait for the worker to get done before returning the contents of the media directory!!!!
+    # TODO: Where the fuck is the downloaded file put by the damn worker!!?!?!?!
 
 
 if __name__ == '__main__':
