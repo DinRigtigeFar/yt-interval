@@ -42,14 +42,13 @@ def waiting():
         q.enqueue(download_whole, session.get("whole_clip"))
     if len(session.get("pics")) > 0:
         q.enqueue(download_pics, session.get("pics"))
-    session["q"] = Queue(connection=conn)
+    holdup(q)
     return render_template("waiting.html")
     
     # TODO: Find out how to wait for the worker to get done before returning the contents of the media directory!!!!
 
-@app.route('/waiting/holdup', methods=['POST'])
-def holdup():
-    if len(session.get("q")) == 0:
+def holdup(queue_object):
+    if len(queue_object) == 0:
         # Packages content of media directory into a zip file that is sent to the user
         with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
             for video in os.listdir('media/'):
@@ -61,7 +60,7 @@ def holdup():
     else:
         # Wait for 20 seconds and check again
         sleep(20)
-        holdup()
+        holdup(queue_object)
 
 if __name__ == '__main__':
     app.run()
