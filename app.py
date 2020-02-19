@@ -58,6 +58,7 @@ def check_content():
 
 @app.route('/waiting/done', methods=['GET'])
 def done():
+    check_content()
     # Returns the content of the media directory
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
             for video in os.listdir('media/'):
