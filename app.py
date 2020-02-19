@@ -55,12 +55,12 @@ def waiting():
 
     # Downloads the media (no need to call if empty)
     if len(session.get("intervals")) > 0:
-        q.enqueue(download_interval, session.get("intervals"))
+        interval = q.enqueue(download_interval, session.get("intervals"))
     if len(session.get("whole_clip")) > 0:
-        q.enqueue(download_whole, session.get("whole_clip"))
+        whole_clip = q.enqueue(download_whole, session.get("whole_clip"))
     if len(session.get("pics")) > 0:
-        q.enqueue(download_pics, session.get("pics"))
-    while q.result is None:
+        pics = q.enqueue(download_pics, session.get("pics"))
+    while interval.result is None:
         print(f"I'm in waitng and this is the amount of jobs running {len(q)}")
         sleep(20)
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
