@@ -49,12 +49,6 @@ def waiting():
 
     return render_template("waiting.html")
 
-@app.context_processor
-def example():
-    try:
-        return dict(job_status=Job.fetch(session.get("interval_id"), connection=conn))
-    except:
-        pass
 
 @app.route('/waiting/done')
 def done():
