@@ -32,7 +32,7 @@ def downloading():
 
 def holdup(queue_object):
     print(f"I'm in holdup and the amount of jobs running is {len(queue_object)}")
-    if len(queue_object) == 0:
+    if len(queue_object) == 0 and len(os.listdir("media")) != 0:
         # Packages content of media directory into a zip file that is sent to the user
         with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
             for video in os.listdir('media/'):
