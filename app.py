@@ -37,6 +37,7 @@ def waiting():
     q.enqueue(download_interval,session.get("intervals"))
     download_whole(session.get("whole_clip"))
     download_pics(session.get("pics"))
+    print(q)
     # Packages content of media directory into a zip file that is sent to the user
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
         for video in os.listdir('media/'):
@@ -45,6 +46,6 @@ def waiting():
             mimetype = 'zip',
             attachment_filename= 'media.zip',
             as_attachment = True)
-
+    # TODO: Find out how to wait for the worker to get done before returning the contents of the media directory!!!!
 if __name__ == '__main__':
     app.run()
