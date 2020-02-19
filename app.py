@@ -49,7 +49,7 @@ def waiting():
     
     return render_template("waiting.html")
 
-@app.route('waiting/done')
+"""@app.route('waiting/done')
 def done():
     # Gets the status of the intervals job
     while Job.fetch(session.get("interval_id"), connection=conn) != "finished":
@@ -60,7 +60,7 @@ def done():
     return send_file('media.zip',
             mimetype = 'zip',
             attachment_filename= 'media.zip',
-            as_attachment = True)
+            as_attachment = True)"""
 
     # TODO: Find out how to wait for the worker to get done before returning the contents of the media directory!!!!
 
