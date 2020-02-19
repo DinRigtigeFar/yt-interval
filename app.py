@@ -3,6 +3,7 @@ from ParseInput import parser, make_time, download_whole, download_interval, dow
 import os
 import zipfile
 from rq import Queue
+from rq.job import Job
 from worker import conn
 from time import sleep
 
@@ -60,7 +61,11 @@ def waiting():
         whole_clip = q.enqueue(download_whole, session.get("whole_clip"))
     if len(session.get("pics")) > 0:
         pics = q.enqueue(download_pics, session.get("pics"))
-    while interval.result is None:
+    job = Job.fetch(interval.id, connection=conn)
+
+    print(f"This is the job status: {job.get_status()}")
+    
+    """while interval.result is None:
         print(f"I'm in waitng and this is the amount of jobs running {len(q)}")
         sleep(20)
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
@@ -69,7 +74,7 @@ def waiting():
     return send_file('media.zip',
             mimetype = 'zip',
             attachment_filename= 'media.zip',
-            as_attachment = True)
+            as_attachment = True)"""
 
     #return render_template("waiting.html")
     
