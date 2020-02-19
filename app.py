@@ -47,7 +47,7 @@ def waiting():
         pics = q.enqueue(download_pics, session.get("pics"))
         session["pics_id"] = pics.id
 
-    return render_template("waiting.html", message=f"{os.listdir('/media')}")
+    return render_template("waiting.html", message=f"{os.listdir('media/')}")
 
 
 @app.route('/waiting/done', methods=['GET'])
