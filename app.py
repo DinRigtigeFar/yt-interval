@@ -54,7 +54,7 @@ def example():
     try:
         return dict(job_status=Job.fetch(session.get("interval_id"), connection=conn))
     except:
-        return None
+        pass
 
 @app.route('/waiting/done')
 def done():
