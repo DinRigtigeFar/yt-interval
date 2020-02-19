@@ -31,7 +31,7 @@ def downloading():
         return render_template('success.html')
 
 def holdup(queue_object):
-    print(len(queue_object))
+    print(f"I'm in holdup and the amount of jobs running is {len(queue_object)}")
     if len(queue_object) == 0:
         # Packages content of media directory into a zip file that is sent to the user
         with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
@@ -59,6 +59,7 @@ def waiting():
         q.enqueue(download_whole, session.get("whole_clip"))
     if len(session.get("pics")) > 0:
         q.enqueue(download_pics, session.get("pics"))
+    sleep(10)
     print(f"I'm in waitng and this is the amount of jobs running {len(q)}")
     return holdup(q)
 
