@@ -46,9 +46,12 @@ def waiting():
     if len(session.get("pics")) > 0:
         pics = q.enqueue(download_pics, session.get("pics"))
         session["pics_id"] = pics.id
-    session["test_done"] = Job.fetch(session.get("interval_id"), connection=conn)
-    
+        
     return render_template("waiting.html")
+
+@app.context_processor
+def example():
+    return dict(job_status=Job.fetch(session.get("interval_id"), connection=conn))
 
 @app.route('/waiting/done')
 def done():
