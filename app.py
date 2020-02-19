@@ -53,8 +53,8 @@ def waiting():
 @app.route('/waiting/done')
 def done():
     # Gets the status of the intervals job
-    while Job.fetch(session.get("interval_id"), connection=conn) != "finished":
-        sleep(10)
+    """while Job.fetch(session.get("interval_id"), connection=conn) != "finished":
+        sleep(10)"""
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
             for video in os.listdir('media/'):
                 zF.write('media/'+video)
