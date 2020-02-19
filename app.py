@@ -47,7 +47,7 @@ def waiting():
         pics = q.enqueue(download_pics, session.get("pics"))
         session["pics_id"] = pics.id
     sleep(20)
-    return render_template("waiting.html", message=f"{Job.fetch(interval.id, connection=conn)}")
+    return render_template("waiting.html", message=f"Task {interval.id} added at {interval.enqueued_at}. {len(q)} tasks in the queue.")
 
 """def check_content():
     if len(os.listdir('media/')) == len(session.get("interval_id")) + 1:
