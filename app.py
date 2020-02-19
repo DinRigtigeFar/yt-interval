@@ -32,24 +32,34 @@ def downloading():
 
 @app.route('/waiting', methods=['POST'])
 def waiting():
-    # Make a queue for the lengthy ffmpeg process
+    # Make a queue for the lengthy ffmpeg process (and others to make sure)
     q = Queue(connection=conn)
-    # Downloads the videos
-    result = q.enqueue(download_interval,session.get("intervals"))
-    download_whole(session.get("whole_clip"))
-    download_pics(session.get("pics"))
-    print(q)
-    print(result.result)
-    sleep(180)
-    print(result.result)
-    # Packages content of media directory into a zip file that is sent to the user
-    with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
-        for video in os.listdir('media/'):
-            zF.write('media/'+video)
-    """return send_file('media.zip',
-            mimetype = 'zip',
-            attachment_filename= 'media.zip',
-            as_attachment = True)"""
+
+    # Downloads the media (no need to call if empty)
+    if len(session.get("intervals")) > 0:
+        session["interval_queue"] = q.enqueue(download_interval, session.get("intervals"))
+    if len(session.get("whole_clip")) > 0:
+        session["whole_queue"] = q.enqueue(download_whole, session.get("whole_clip"))
+    if len(session.get("pics")) > 0:
+        session["pic_queue"] = q.enqueue(download_pics, session.get("pics"))
+    return render_template("waiting.html")
+    
     # TODO: Find out how to wait for the worker to get done before returning the contents of the media directory!!!!
+
+@app.route('/waiting/holdup', methods=['POST'])
+def holdup():
+    if len(session.get("intervals")) > 0 and session.get("interval_queue") != None:
+        # Packages content of media directory into a zip file that is sent to the user
+        with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
+            for video in os.listdir('media/'):
+                zF.write('media/'+video)
+        return send_file('media.zip',
+                mimetype = 'zip',
+                attachment_filename= 'media.zip',
+                as_attachment = True)
+    else:
+        sleep(20)
+        holdup()
+
 if __name__ == '__main__':
     app.run()
