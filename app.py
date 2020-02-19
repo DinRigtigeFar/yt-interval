@@ -49,6 +49,12 @@ def waiting():
     sleep(20)
     return render_template("waiting.html", message=f"{Job.fetch(session.get('interval_id'), connection=conn)}")
 
+def check_content():
+    if len(os.listdir('media/')) == len(session.get("interval_id")) + 1:
+        return
+    else:
+        sleep(15)
+        check_content()
 
 @app.route('/waiting/done', methods=['GET'])
 def done():
