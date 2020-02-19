@@ -34,10 +34,11 @@ def waiting():
     # Make a queue for the lengthy ffmpeg process
     q = Queue(connection=conn)
     # Downloads the videos
-    q.enqueue(download_interval,session.get("intervals"))
+    result = q.enqueue(download_interval,session.get("intervals"))
     download_whole(session.get("whole_clip"))
     download_pics(session.get("pics"))
     print(q)
+    print(result)
     # Packages content of media directory into a zip file that is sent to the user
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
         for video in os.listdir('media/'):
