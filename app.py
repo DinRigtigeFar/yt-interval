@@ -60,9 +60,9 @@ def waiting():
     if len(session.get("pics")) > 0:
         q.enqueue(download_pics, session.get("pics"))
     print(f"I'm in waitng and this is the amount of jobs running {len(q)}")
-    holdup(q)
+    return holdup(q)
 
-    return render_template("waiting.html")
+    #return render_template("waiting.html")
     
     # TODO: Find out how to wait for the worker to get done before returning the contents of the media directory!!!!
 
