@@ -11,6 +11,9 @@
   <body>
     <div class="container">
       <img src="../static/YTDL7.png" alt="YTDL logo" class="logo" />
+      {% if message %}
+      <p class="message">{{ message | safe }}</p>
+      {% endif %}
       <form action="/waiting" method="POST">
         <div class="form-group">
           <h3>Done parsing your input. To download click the button.</h3>

@@ -47,14 +47,12 @@ def waiting():
         pics = q.enqueue(download_pics, session.get("pics"))
         session["pics_id"] = pics.id
 
-    return render_template("waiting.html")
+    return render_template("waiting.html", message=f"{os.listdir('/media')}")
 
 
-@app.route('/waiting/done')
+@app.route('/waiting/done', methods=['GET'])
 def done():
-    # Gets the status of the intervals job
-    """while Job.fetch(session.get("interval_id"), connection=conn) != "finished":
-        sleep(10)"""
+    # Returns the content of the media directory
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
             for video in os.listdir('media/'):
                 zF.write('media/'+video)

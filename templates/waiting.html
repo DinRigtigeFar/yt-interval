@@ -11,6 +11,9 @@
   <body>
     <div class="container">
       <img src="../static/YTDL7.png" alt="YTDL logo" class="logo" />
+      {% if message %}
+      <p class="message">{{ message | safe }}</p>
+      {% endif %}
       <h3>Your videos are being downloaded at the moment</h3>
       <h4>Keep refreshing every 20 seconds and the dl button when "finished":</h4>
       <body>

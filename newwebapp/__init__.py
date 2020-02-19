@@ -1,6 +1,7 @@
 __version__ = '0.1.0'
 
 flask.Flask(__name__)
+
 @app.context_processor
 def example():
     try:
