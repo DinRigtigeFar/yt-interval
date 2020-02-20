@@ -183,7 +183,7 @@ def download_interval(interval_list):
     """
     with open(os.path.join("media", "no_content.txt"),"w") as w:
         w.write("empty")
-    
+    print(f"I'm here {os.getcwd()}")
     # Iterate over the zip object
     for link in range(len(interval_list)):
         try:
