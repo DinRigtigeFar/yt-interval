@@ -46,7 +46,7 @@ def waiting():
     if len(session.get("pics")) > 0:
         pics = q.enqueue(download_pics, session.get("pics"))
         session["pics_id"] = pics.id
-    sleep(20)
+    sleep(5)
     return render_template("waiting.html", message=f"Task {interval.id} added at {interval.enqueued_at}. {len(q)} tasks in the queue.")
 
 @app.route('/waiting/wait', methods=['GET'])
