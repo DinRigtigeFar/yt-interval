@@ -181,6 +181,9 @@ def download_interval(interval_list):
     Function to download videos in specified intervals
     Takes a list (interval_list) and a path as inputs
     """
+    with open(os.path.join("media", "no_content.txt"),"w") as w:
+        w.write("empty")
+    
     # Iterate over the zip object
     for link in range(len(interval_list)):
         try:

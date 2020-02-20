@@ -49,16 +49,12 @@ def waiting():
     sleep(20)
     return render_template("waiting.html", message=f"Task {interval.id} added at {interval.enqueued_at}. {len(q)} tasks in the queue.")
 
-"""def check_content():
-    if len(os.listdir('media/')) == len(session.get("interval_id")) + 1:
-        return
-    else:
-        sleep(15)
-        check_content()"""
+@app.route('/waiting/wait', methods=['GET'])
+def wait():
+    return f'This is the content of the media directory: {os.listdir("media/")}.'
 
 @app.route('/waiting/done', methods=['GET'])
 def done():
-    #check_content()
     # Returns the content of the media directory
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
             for video in os.listdir('media/'):
