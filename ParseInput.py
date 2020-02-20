@@ -220,7 +220,6 @@ def download_interval(interval_list):
                         .output(os.path.join("media", f'{video.title}.mp4'))
                         .run()
                     )
-                    return "Success"
                 except TypeError as e:
                     print(f"An error occurred e 0: {e}")
                 except ffmpeg._run.Error as e:
