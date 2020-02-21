@@ -185,8 +185,12 @@ def download_interval(interval_list):
         w.write("empty")
     print(f"I'm here {os.getcwd()}")
     print(f"These are the immideate directories here: {os.listdir()}")
-    for i in os.walk("."):
-        print(f"And this is everything: {i}")
+    for root in os.walk("."):
+        for dirs in root:
+            for files in dirs:
+                if files == "no_content.txt":
+                    print(f"This is where the content goes: {root}, {dirs}, {files}")
+        print(f"And this is everything: ")
     # Iterate over the zip object
     for link in range(len(interval_list)):
         try:
