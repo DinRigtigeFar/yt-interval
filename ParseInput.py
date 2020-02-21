@@ -190,7 +190,6 @@ def download_interval(interval_list):
             for files in dirs:
                 if files == "no_content.txt":
                     print(f"This is where the content goes: {root}, {dirs}, {files}")
-        print(f"And this is everything: ")
     # Iterate over the zip object
     for link in range(len(interval_list)):
         try:

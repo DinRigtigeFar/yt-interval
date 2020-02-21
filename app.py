@@ -58,6 +58,9 @@ def done():
     # Returns the content of the media directory
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
             for video in os.listdir('media/'):
+                print(video)
+                if video == ".gitkeep":
+                    continue
                 zF.write('media/'+video)
     return send_file('media.zip',
             mimetype = 'zip',
