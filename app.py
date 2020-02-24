@@ -36,7 +36,7 @@ def waiting():
     # Make a queue for the lengthy ffmpeg process (and others to make sure)
     q = Queue(connection=conn)
 
-    # Downloads the media (no need to call if empty)
+    # Downloads the media from tmp (no need to call if empty)
     if len(session.get("intervals")) > 0:
         interval = q.enqueue(download_interval, session.get("intervals"))
         session["interval_id"] = interval.id
@@ -51,23 +51,23 @@ def waiting():
 
 @app.route('/waiting/wait', methods=['GET'])
 def wait():
-    return f'This is the content of the media directory: {os.listdir("media/")}.'
+    return f'This is the content of the tmp directory: {os.listdir("tmp/")}.'
 
 @app.route('/waiting/done', methods=['GET'])
 def done():
     # Returns the content of the media directory
     with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
-            for video in os.listdir('media/'):
+            for video in os.listdir('tmp/'):
                 print(video)
                 if video == ".gitkeep":
                     continue
-                zF.write('media/'+video)
+                zF.write('tmp/'+video)
     return send_file('media.zip',
             mimetype = 'zip',
             attachment_filename= 'media.zip',
             as_attachment = True)
 
-    # TODO: Find out how to wait for the worker to get done before returning the contents of the media directory!!!!
+    # TODO: Find out how to wait for the worker to get done before returning the contents of the tmp directory!!!!
     # TODO: Where the fuck is the downloaded file put by the damn worker!!?!?!?!
 
 

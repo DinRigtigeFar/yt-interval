@@ -164,7 +164,7 @@ def download_whole(no_interval):
     Downloaded to the same place where yt_vids is saved to (from save_link_time func)
     """
     print(os.getcwd())
-    SAVE_PATH = 'media'
+    SAVE_PATH = 'tmp'
     ydl_opts = {"nocheckcertificate": True, "noplaylist": True, 'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s'}
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
@@ -181,7 +181,7 @@ def download_interval(interval_list):
     Function to download videos in specified intervals
     Takes a list (interval_list) and a path as inputs
     """
-    with open(os.path.join("media", "no_content.txt"),"w") as w:
+    with open(os.path.join("tmp", "no_content.txt"),"w") as w:
         w.write("empty")
     print(f"My location is {os.path.abspath('.')}")
     #print(f"I'm here {os.getcwd()}")
@@ -191,12 +191,13 @@ def download_interval(interval_list):
     #         for files in dirs:
     #             if files == "no_content.txt":
     #                 print(f"This is where the content goes: {root}, {dirs}, {files}")
+
     # Iterate over the zip object
     for link in range(len(interval_list)):
         try:
             video = pafy.new(interval_list[link][0], ydl_opts={'nocheckcertificate': True, "noplaylist": True})
             # Only downloads the video if the video hasn't been downloaded before
-            if not os.path.exists(os.path.join("media", f"{video.title}.mp4")):
+            if not os.path.exists(os.path.join("tmp", f"{video.title}.mp4")):
                 video_s = video.getbestvideo()
                 # TODO: add a way to get the second best stream (third etc.) when an error occurs using Pafy.videostreams and going through the list
                 video_a = video.getbestaudio()
@@ -224,7 +225,7 @@ def download_interval(interval_list):
                             a=1
                         )
                         # Output is title of video with mp4 ending
-                        .output(os.path.join("media", f'{video.title}.mp4'))
+                        .output(os.path.join("tmp", f'{video.title}.mp4'))
                         .run()
                     )
                 except TypeError as e:
@@ -242,7 +243,7 @@ def download_pics(pics_links):
 
     for link in range(len(pics_links)):
         r = requests.get(pics_links[link][0])
-        with open(os.path.join("media", f"{link}.jpg"), "wb") as dl:
+        with open(os.path.join("tmp", f"{link}.jpg"), "wb") as dl:
             dl.write(r.content)
 
 
