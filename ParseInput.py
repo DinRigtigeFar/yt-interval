@@ -183,7 +183,7 @@ def download_interval(interval_list):
     """
     with open(os.path.join("media", "no_content.txt"),"w") as w:
         w.write("empty")
-    print(f"My location is {os.path.abspath(.)}")
+    print(f"My location is {os.path.abspath('.')}")
     #print(f"I'm here {os.getcwd()}")
     #print(f"These are the immideate directories here: {os.listdir()}")
     # for root in os.walk("."):
