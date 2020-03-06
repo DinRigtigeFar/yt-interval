@@ -1,22 +1,20 @@
 [tool.poetry]
-name = "newWebApp"
-version = "0.0.1"
-description = "Youtube downloader able to download intervals"
+name = "newwebapp"
+version = "0.1.0"
+description = ""
 authors = ["Christian Jørgensen <friis93@me.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
+certifi = "2019.11.28"
+chardet = "3.0.4"
 flask = "^1.1.1"
 pafy = "^0.5.5"
-youtube-dl = "^2020.1.24"
+requests = "^2.23.0"
+youtube-dl = "^2020.3.6"
 ffmpeg-python = "^0.2.0"
-gunicorn = "^20.0.4"
-requests = "^2.22.0"
-rq = "^1.2.2"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
-pylint = "^2.4.4"
 
 [build-system]
 requires = ["poetry>=0.12"]

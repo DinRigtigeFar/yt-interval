@@ -13,11 +13,12 @@
       <img src="../static/YTDL7.png" alt="YTDL logo" class="logo" />
       {% if message %}
       <p class="message">{{ message | safe }}</p>
-      {% endif %}
+      {% else %}
       <h3>Your videos are being downloaded at the moment</h3>
       <body>
         Please wait about 2-3 minutes while they're being processed. Then press the button that says press her blablabla!
       </body>
+      {% endif %}
       <form action="/waiting/done">
         <input type="submit" value="Press here to download the media. Might not be ready, just wait then." class="btn">
       </form>
@@ -27,7 +28,7 @@
     </div>
     <div class="container">
       <body>
-        Created by Christian Hviid Friis. For inquiries/problems <a href="mailto:friis93@me.com?subject=yt-interval problems">email me!</a>
+        Created by Christian Hviid Friis. <a href="https://github.com/DinRigtigeFar">Github</a>
       </body>
     </div>
   </body>

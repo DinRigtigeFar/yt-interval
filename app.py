@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, make_response, session, redirect, url_for, send_file
-from ParseInput import parser, make_time, download_whole, download_interval, download_pics
 import os
 import zipfile
-from rq import Queue
-from rq.job import Job
-from worker import conn
-from time import sleep
+from pathlib import Path
+
+from flask import (Flask, make_response, redirect, render_template, request,
+                   send_file, session, url_for)
+
+from ParseInput import (download_interval, download_pics, download_whole,
+                        make_time, parser)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
@@ -13,7 +14,13 @@ app.secret_key = os.environ.get("SECRET_KEY")
 
 @app.route('/')
 def index():
+    if len(os.listdir("./tmp")) > 0:
+        [f.unlink() for f in Path("./tmp").glob("*") if f.is_file()]
+    if os.path.exists("media.zip"):
+        Path("./media.zip").unlink()
+
     return render_template('index.html')
+
 
 @app.route('/downloading', methods=['POST', 'GET'])
 def downloading():
@@ -31,41 +38,37 @@ def downloading():
             return render_template('index.html', message="Please input a valid link: youtube.com/blabla, youtu.be/blabla some.thing/jpg")
         return render_template('success.html')
 
+
 @app.route('/waiting', methods=['POST'])
 def waiting():
-    # Make a queue for the lengthy ffmpeg process (and others to make sure)
-    q = Queue(connection=conn)
-
     # Downloads the media from tmp (no need to call if empty)
     if len(session.get("intervals")) > 0:
-        interval = q.enqueue(download_interval, session.get("intervals"))
-        session["interval_id"] = interval.id
+        download_interval(session.get('intervals'))
     if len(session.get("whole_clip")) > 0:
-        whole_clip = q.enqueue(download_whole, session.get("whole_clip"))
-        session["whole_clip_id"] = whole_clip.id
+        download_whole(session.get('whole_clip'))
     if len(session.get("pics")) > 0:
-        pics = q.enqueue(download_pics, session.get("pics"))
-        session["pics_id"] = pics.id
-    sleep(5)
-    return render_template("waiting.html", message=f"Task {interval.id} added at {interval.enqueued_at}. {len(q)} tasks in the queue.")
+        download_pics(session.get('pics'))
+    return render_template("waiting.html", message=f"Done downloading all of your data.")
+
 
 @app.route('/waiting/wait', methods=['GET'])
 def wait():
     return f'This is the content of the tmp directory: {os.listdir("tmp/")}.'
 
+
 @app.route('/waiting/done', methods=['GET'])
 def done():
     # Returns the content of the media directory
-    with zipfile.ZipFile('media.zip','w', zipfile.ZIP_DEFLATED) as zF:
-            for video in os.listdir('tmp/'):
-                print(video)
-                if video == ".gitkeep":
-                    continue
-                zF.write('tmp/'+video)
+    with zipfile.ZipFile('media.zip', 'w', zipfile.ZIP_DEFLATED) as zF:
+        for video in os.listdir('tmp/'):
+            print(video)
+            if video == ".gitkeep":
+                continue
+            zF.write('tmp/'+video)
     return send_file('media.zip',
-            mimetype = 'zip',
-            attachment_filename= 'media.zip',
-            as_attachment = True)
+                     mimetype='zip',
+                     attachment_filename='media.zip',
+                     as_attachment=True)
 
     # TODO: Find out how to wait for the worker to get done before returning the contents of the tmp directory!!!!
     # TODO: Where the fuck is the downloaded file put by the damn worker!!?!?!?!

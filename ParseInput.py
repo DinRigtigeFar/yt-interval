@@ -1,13 +1,13 @@
-#!/usr/local/bin/python
-
-import re
-import os
-import youtube_dl
 import datetime
+import os
+import re
+#import sys
+
 import ffmpeg
 import pafy
-import sys
 import requests
+import youtube_dl
+
 
 """def resource_path(relative_path):
     
@@ -40,12 +40,15 @@ def parser(list_of_text):
 
     pics = [link.split() for link in list_of_text if re.match(pic_link, link)]
 
-    found_yt_links = [line.split() for line in list_of_text if re.match(yt_link, line)]
-    found_pron = [line.split() for line in list_of_text if re.match(pron_link, line)]
-    
+    found_yt_links = [line.split()
+                      for line in list_of_text if re.match(yt_link, line)]
+    found_pron = [line.split()
+                  for line in list_of_text if re.match(pron_link, line)]
+
     joined_links = found_yt_links + found_pron
 
     return joined_links, pics
+
 
 def hasNumbers(inputString):
     """
@@ -53,17 +56,27 @@ def hasNumbers(inputString):
     """
     return any(char.isdigit() for char in inputString)
 
+
 def tedoius_time(time_string):
     """
     Small function to change time format.
     Used for make_time func
     """
+    start = ['start', 'begin', 'beginning', 'head', 'first']
+    end = ['slut', 'end', 'tail', 'finish',
+           'finito', 'fin', 'done', 'finished']
 
-    if time_string.lower() == "start":
+    if time_string.lower() in start:
         time_string = "00:00:00"
     # We need this exact string for later
-    elif time_string.lower() == "slut":
+    elif time_string.lower() in end:
         return time_string
+    elif len(time_string) == 1:
+        time_string = f"00:00:0{time_string}"
+    elif len(time_string) == 2:
+        time_string = f"00:00:{time_string}"
+    elif len(time_string) == 3:
+        time_string = f"00:00{time_string}"
     elif len(time_string) == 4:
         time_string = f"00:0{time_string}"
     elif len(time_string) == 5:
@@ -72,7 +85,10 @@ def tedoius_time(time_string):
         time_string = f"00{time_string}"
     elif len(time_string) == 7:
         time_string = f"0{time_string}"
+    elif len(time_string) > 8:
+        raise('Time string too long!')
     return time_string
+
 
 def make_time(parsed_file):
     """
@@ -80,11 +96,13 @@ def make_time(parsed_file):
     Else changes the time format into that
     Takes the output from the parser(filename) func
     """
+    start = ['start', 'begin', 'beginning', 'head', 'first']
+    end = ['slut', 'end', 'tail', 'finish',
+           'finito', 'fin', 'done', 'finished']
 
     whole_clip = []
-
     holder_list = parsed_file
-    
+
     for line in holder_list[:]:
         try:
             if not hasNumbers(line[1]):
@@ -98,15 +116,12 @@ def make_time(parsed_file):
     split_times = [line[1].split("-") for line in holder_list]
     links = [line[0] for line in holder_list]
 
-    # Replace . with :
+    # Replace . with : for datetime calculations
     for time in split_times:
-        try:
-            time[0] = time[0].replace(".", ":")
-            time[1] = time[1].replace(".", ":")
-        except IndexError:
-            pass
+        time[0] = time[0].replace(".", ":")
+        time[1] = time[1].replace(".", ":")
 
-        # Change the time into the correct format by tedious if else statements. Assumes at least 4 characters always.
+        # Change the time into the correct format by tedious if else statements. Assumes at least 1 character that is a second.
         # Checks the start time. If time is "start" change it to 00:00:00.
         time[0] = tedoius_time(time[0])
         time[1] = tedoius_time(time[1])
@@ -119,27 +134,30 @@ def make_time(parsed_file):
     for time in split_times:
         # Split the times into hh, mm, ss
         first = time[0].split(":")
-        if not time[1].lower() == "slut":
+        if not time[1].lower() in end:
             last = time[1].split(":")
         # Make a datetime object so we can perform calculations (date is irrelevant)
-        start = datetime.datetime(2019, 1, 1, int(first[0]), int(first[1]), int(first[2]))
-        if not time[1].lower() == "slut":
-            end = datetime.datetime(2019, 1, 1, int(last[0]), int(last[1]), int(last[2]))
+        starts = datetime.datetime(2019, 1, 1, int(
+            first[0]), int(first[1]), int(first[2]))
+        if last:
+            ends = datetime.datetime(2019, 1, 1, int(
+                last[0]), int(last[1]), int(last[2]))
         # Perform calculations and if start is already at 00:00:00 do nothing
-        start -= add_sub
-        start_delta = str(start).split()[1]
+        starts -= add_sub
+        start_delta = str(starts).split()[1]
         start_delta = start_delta.split(":")
         # For ffmpeg you give start time and then run time (not end time)
-        offset = datetime.timedelta(hours=int(start_delta[0]), minutes=int(start_delta[1]), seconds=int(start_delta[2]))
-        if not time[1].lower() == "slut":
-            end += add_sub
+        offset = datetime.timedelta(hours=int(start_delta[0]), minutes=int(
+            start_delta[1]), seconds=int(start_delta[2]))
+        if last:
+            ends += add_sub
             # This is how long the clip should be
-            end -= offset
+            ends -= offset
         # Assign new intervals
-            time[1] = str(end).split()[1]
-        start = str(start).split()
-        if start[1] != "23:59:59":
-            time[0] = start[1]
+            time[1] = str(ends).split()[1]
+        starts = str(starts).split()
+        if starts[1] != "23:59:59":
+            time[0] = starts[1]
 
     # Zip the two lists together. But return a list of this, since a zip object can only be used once.
     zipped = zip(links, split_times)
@@ -155,7 +173,8 @@ def save_link_time(return_list, path_to_download):
 
     # Opens a new file and writes lines to it and saves it at the spot provided
     with open(os.path.join(path_to_download, "yt_vids.txt"), "w") as w:
-        w.write('\n'.join('{} {} {}'.format(x[0], x[1][0], x[1][1]) for x in return_list))
+        w.write('\n'.join('{} {} {}'.format(
+            x[0], x[1][0], x[1][1]) for x in return_list))
 
 
 def download_whole(no_interval):
@@ -165,7 +184,8 @@ def download_whole(no_interval):
     """
     print(os.getcwd())
     SAVE_PATH = 'tmp'
-    ydl_opts = {"nocheckcertificate": True, "noplaylist": True, 'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s'}
+    ydl_opts = {"nocheckcertificate": True, "noplaylist": True,
+                'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s'}
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         for video in range(len(no_interval)):
@@ -181,21 +201,15 @@ def download_interval(interval_list):
     Function to download videos in specified intervals
     Takes a list (interval_list) and a path as inputs
     """
-    with open(os.path.join("tmp", "no_content.txt"),"w") as w:
-        w.write("empty")
-    print(f"My location is {os.path.abspath('.')}")
-    #print(f"I'm here {os.getcwd()}")
-    #print(f"These are the immideate directories here: {os.listdir()}")
-    # for root in os.walk("."):
-    #     for dirs in root:
-    #         for files in dirs:
-    #             if files == "no_content.txt":
-    #                 print(f"This is where the content goes: {root}, {dirs}, {files}")
+    start = ['start', 'begin', 'beginning', 'head', 'first']
+    end = ['slut', 'end', 'tail', 'finish',
+           'finito', 'fin', 'done', 'finished']
 
-    # Iterate over the zip object
+    # Iterate over the list
     for link in range(len(interval_list)):
         try:
-            video = pafy.new(interval_list[link][0], ydl_opts={'nocheckcertificate': True, "noplaylist": True})
+            video = pafy.new(interval_list[link][0], ydl_opts={
+                             'nocheckcertificate': True, "noplaylist": True})
             # Only downloads the video if the video hasn't been downloaded before
             if not os.path.exists(os.path.join("tmp", f"{video.title}.mp4")):
                 video_s = video.getbestvideo()
@@ -203,14 +217,18 @@ def download_interval(interval_list):
                 video_a = video.getbestaudio()
 
                 # Checks if the end point is a string
-                if interval_list[link][1][1].lower() == "slut":
+                if interval_list[link][1][1].lower() in end:
                     # Where is the stream, where should we start, how long should it run
-                    mp4_vid = ffmpeg.input(video_s.url, ss=interval_list[link][1][0], t=video.duration)
-                    mp4_aud = ffmpeg.input(video_a.url, ss=interval_list[link][1][0], t=video.duration)
+                    mp4_vid = ffmpeg.input(
+                        video_s.url, ss=interval_list[link][1][0], t=video.duration)
+                    mp4_aud = ffmpeg.input(
+                        video_a.url, ss=interval_list[link][1][0], t=video.duration)
                 else:
                     # Where is the stream, where should we start, how long should it run
-                    mp4_vid = ffmpeg.input(video_s.url, ss=interval_list[link][1][0], t=interval_list[link][1][1])
-                    mp4_aud = ffmpeg.input(video_a.url, ss=interval_list[link][1][0], t=interval_list[link][1][1])
+                    mp4_vid = ffmpeg.input(
+                        video_s.url, ss=interval_list[link][1][0], t=interval_list[link][1][1])
+                    mp4_aud = ffmpeg.input(
+                        video_a.url, ss=interval_list[link][1][0], t=interval_list[link][1][1])
 
                 # Do the processing
                 try:
@@ -245,10 +263,3 @@ def download_pics(pics_links):
         r = requests.get(pics_links[link][0])
         with open(os.path.join("tmp", f"{link}.jpg"), "wb") as dl:
             dl.write(r.content)
-
-
-
-
-
-
-

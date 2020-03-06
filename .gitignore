@@ -3,7 +3,6 @@
 
 # Poetry
 *.lock
-*.toml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -122,6 +121,9 @@ venv.bak/
 # Spyder project settings
 .spyderproject
 .spyproject
+
+# Vscodium settings
+.vscode
 
 # Rope project settings
 .ropeproject
