@@ -12,6 +12,17 @@ It can also donwload pictures if you supply a link with 'jpg' in it somwhere.
 
 The program requires ffmpeg to be installed on your machine.
 
+## Installation
+```
+git clone https://github.com/DinRigtigeFar/yt-interval.git
+cd yt-interval
+python3 -m venv venv_yt
+. venv_yt/bin/activate
+pip install -r requirements.txt
+python app.py
+```
+
+
 app.py is the frontend, but ParseInput.py is where all the magic happens.
 
 I hope you enjoy this program.
