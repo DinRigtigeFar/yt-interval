@@ -4,7 +4,7 @@ from pathlib import Path
 
 from flask import (Flask, make_response, redirect, render_template, request,
                    send_file, session, url_for)
-
+                   
 from ParseInput import (download_interval, download_pics, download_whole,
                         make_time, parser)
 

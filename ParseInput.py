@@ -201,7 +201,7 @@ def download_interval(interval_list):
     Function to download videos in specified intervals
     Takes a list (interval_list) and a path as inputs
     """
-    start = ['start', 'begin', 'beginning', 'head', 'first']
+    
     end = ['slut', 'end', 'tail', 'finish',
            'finito', 'fin', 'done', 'finished']
 
