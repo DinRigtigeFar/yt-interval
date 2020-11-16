@@ -14,8 +14,8 @@ app.secret_key = os.environ.get("SECRET_KEY")
 
 @app.route('/')
 def index():
-    if len(os.listdir("./tmp")) > 0:
-        [f.unlink() for f in Path("./tmp").glob("*") if f.is_file()]
+    if len(os.listdir("./content")) > 0:
+        [f.unlink() for f in Path("./content").glob("*") if f.is_file()]
     if os.path.exists("media.zip"):
         Path("./media.zip").unlink()
 
@@ -41,7 +41,7 @@ def downloading():
 
 @app.route('/waiting', methods=['POST'])
 def waiting():
-    # Downloads the media from tmp (no need to call if empty)
+    # Downloads the media from content (no need to call if empty)
     if len(session.get("intervals")) > 0:
         download_interval(session.get('intervals'))
     if len(session.get("whole_clip")) > 0:
@@ -53,25 +53,22 @@ def waiting():
 
 @app.route('/waiting/wait', methods=['GET'])
 def wait():
-    return f'This is the content of the tmp directory: {os.listdir("tmp/")}.'
+    return f'This is the content of the content directory: {os.listdir("content/")}.'
 
 
 @app.route('/waiting/done', methods=['GET'])
 def done():
     # Returns the content of the media directory
     with zipfile.ZipFile('media.zip', 'w', zipfile.ZIP_DEFLATED) as zF:
-        for video in os.listdir('tmp/'):
+        for video in os.listdir('content/'):
             print(video)
             if video == ".gitkeep":
                 continue
-            zF.write('tmp/'+video)
+            zF.write('content/'+video)
     return send_file('media.zip',
                      mimetype='zip',
                      attachment_filename='media.zip',
                      as_attachment=True)
-
-    # TODO: Find out how to wait for the worker to get done before returning the contents of the tmp directory!!!!
-    # TODO: Where the fuck is the downloaded file put by the damn worker!!?!?!?!
 
 
 if __name__ == '__main__':

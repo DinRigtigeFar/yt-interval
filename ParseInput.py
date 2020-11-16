@@ -96,7 +96,7 @@ def make_time(parsed_file):
     Else changes the time format into that
     Takes the output from the parser(filename) func
     """
-    start = ['start', 'begin', 'beginning', 'head', 'first']
+    
     end = ['slut', 'end', 'tail', 'finish',
            'finito', 'fin', 'done', 'finished']
 
@@ -183,7 +183,7 @@ def download_whole(no_interval):
     Downloaded to the same place where yt_vids is saved to (from save_link_time func)
     """
     print(os.getcwd())
-    SAVE_PATH = 'tmp'
+    SAVE_PATH = 'content'
     ydl_opts = {"nocheckcertificate": True, "noplaylist": True,
                 'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s'}
 
@@ -206,29 +206,29 @@ def download_interval(interval_list):
            'finito', 'fin', 'done', 'finished']
 
     # Iterate over the list
-    for link in range(len(interval_list)):
+    for idx, _ in enumerate(interval_list):
         try:
-            video = pafy.new(interval_list[link][0], ydl_opts={
+            video = pafy.new(interval_list[idx][0], ydl_opts={
                              'nocheckcertificate': True, "noplaylist": True})
             # Only downloads the video if the video hasn't been downloaded before
-            if not os.path.exists(os.path.join("tmp", f"{video.title}.mp4")):
+            if not os.path.exists(os.path.join("content", f"{video.title}.mp4")):
                 video_s = video.getbestvideo()
                 # TODO: add a way to get the second best stream (third etc.) when an error occurs using Pafy.videostreams and going through the list
                 video_a = video.getbestaudio()
 
                 # Checks if the end point is a string
-                if interval_list[link][1][1].lower() in end:
+                if interval_list[idx][1][1].lower() in end:
                     # Where is the stream, where should we start, how long should it run
                     mp4_vid = ffmpeg.input(
-                        video_s.url, ss=interval_list[link][1][0], t=video.duration)
+                        video_s.url, ss=interval_list[idx][1][0], t=video.duration)
                     mp4_aud = ffmpeg.input(
-                        video_a.url, ss=interval_list[link][1][0], t=video.duration)
+                        video_a.url, ss=interval_list[idx][1][0], t=video.duration)
                 else:
                     # Where is the stream, where should we start, how long should it run
                     mp4_vid = ffmpeg.input(
-                        video_s.url, ss=interval_list[link][1][0], t=interval_list[link][1][1])
+                        video_s.url, ss=interval_list[idx][1][0], t=interval_list[idx][1][1])
                     mp4_aud = ffmpeg.input(
-                        video_a.url, ss=interval_list[link][1][0], t=interval_list[link][1][1])
+                        video_a.url, ss=interval_list[idx][1][0], t=interval_list[idx][1][1])
 
                 # Do the processing
                 try:
@@ -243,7 +243,7 @@ def download_interval(interval_list):
                             a=1
                         )
                         # Output is title of video with mp4 ending
-                        .output(os.path.join("tmp", f'{video.title}.mp4'))
+                        .output(os.path.join("content", f'{video.title}.mp4'))
                         .run()
                     )
                 except TypeError as e:
@@ -251,7 +251,7 @@ def download_interval(interval_list):
                 except ffmpeg._run.Error as e:
                     print(f"An error occurred e 1: {e}")
         except Exception as e:
-            print(f"I couldn't download {interval_list[link]} due to: {e}")
+            print(f"I couldn't download {interval_list[idx]} due to: {e}")
 
 
 def download_pics(pics_links):
@@ -261,5 +261,5 @@ def download_pics(pics_links):
 
     for link in range(len(pics_links)):
         r = requests.get(pics_links[link][0])
-        with open(os.path.join("tmp", f"{link}.jpg"), "wb") as dl:
+        with open(os.path.join("content", f"{link}.jpg"), "wb") as dl:
             dl.write(r.content)
