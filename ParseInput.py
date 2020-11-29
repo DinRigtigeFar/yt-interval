@@ -30,7 +30,7 @@ import youtube_dl
 
 def parser(list_of_text):
     """
-    Open a tab delimited file and return links and time
+    Read input from raw text and return the links and time
     """
 
     # Youtube link regex
@@ -97,6 +97,7 @@ def make_time(parsed_file):
     Takes the output from the parser(filename) func
     """
     
+    # Different ways to say end
     end = ['slut', 'end', 'tail', 'finish',
            'finito', 'fin', 'done', 'finished']
 
@@ -177,81 +178,77 @@ def save_link_time(return_list, path_to_download):
             x[0], x[1][0], x[1][1]) for x in return_list))
 
 
-def download_whole(no_interval):
+def download_whole(link):
     """
     Function that downloads a whole video when no interval is supplied
     Downloaded to the same place where yt_vids is saved to (from save_link_time func)
     """
-    print(os.getcwd())
+
     SAVE_PATH = 'content'
     ydl_opts = {"nocheckcertificate": True, "noplaylist": True,
                 'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s'}
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        for video in range(len(no_interval)):
-            try:
-                ydl.download([no_interval[video]])
-            except youtube_dl.utils.ExtractorError or youtube_dl.utils.DownloadError:
-                print(f"Couldn't download {no_interval[video]}")
-                continue
+        try:
+            ydl.download([link])
+        except youtube_dl.utils.ExtractorError or youtube_dl.utils.DownloadError:
+            print(f"Couldn't download {link}")
 
 
-def download_interval(interval_list):
+def download_interval(link):
     """
     Function to download videos in specified intervals
-    Takes a list (interval_list) and a path as inputs
+    Takes a list (link) and a path as inputs
     """
     
     end = ['slut', 'end', 'tail', 'finish',
            'finito', 'fin', 'done', 'finished']
 
-    # Iterate over the list
-    for idx, _ in enumerate(interval_list):
-        try:
-            video = pafy.new(interval_list[idx][0], ydl_opts={
-                             'nocheckcertificate': True, "noplaylist": True})
-            # Only downloads the video if the video hasn't been downloaded before
-            if not os.path.exists(os.path.join("content", f"{video.title}.mp4")):
-                video_s = video.getbestvideo()
-                # TODO: add a way to get the second best stream (third etc.) when an error occurs using Pafy.videostreams and going through the list
-                video_a = video.getbestaudio()
+    try:
+        video = pafy.new(link[0], ydl_opts={
+                            'nocheckcertificate': True, "noplaylist": True})
+        # Only downloads the video if the video hasn't been downloaded before
+        if not os.path.exists(os.path.join("content", f"{video.title}.mp4")):
+            video_s = video.getbestvideo()
+            # TODO: add a way to get the second best stream (third etc.) when an error occurs using Pafy.videostreams and going through the list
+            video_a = video.getbestaudio()
 
-                # Checks if the end point is a string
-                if interval_list[idx][1][1].lower() in end:
-                    # Where is the stream, where should we start, how long should it run
-                    mp4_vid = ffmpeg.input(
-                        video_s.url, ss=interval_list[idx][1][0], t=video.duration)
-                    mp4_aud = ffmpeg.input(
-                        video_a.url, ss=interval_list[idx][1][0], t=video.duration)
-                else:
-                    # Where is the stream, where should we start, how long should it run
-                    mp4_vid = ffmpeg.input(
-                        video_s.url, ss=interval_list[idx][1][0], t=interval_list[idx][1][1])
-                    mp4_aud = ffmpeg.input(
-                        video_a.url, ss=interval_list[idx][1][0], t=interval_list[idx][1][1])
+            # Checks if the end point is a string
+            if link[1][1].lower() in end:
+                # Where is the stream, where should we start, how long should it run
+                mp4_vid = ffmpeg.input(
+                    video_s.url, ss=link[1][0], t=video.duration)
+                mp4_aud = ffmpeg.input(
+                    video_a.url, ss=link[1][0], t=video.duration)
+            else:
+                # Where is the stream, where should we start, how long should it run
+                mp4_vid = ffmpeg.input(
+                    video_s.url, ss=link[1][0], t=link[1][1])
+                mp4_aud = ffmpeg.input(
+                    video_a.url, ss=link[1][0], t=link[1][1])
 
-                # Do the processing
-                try:
-                    (
-                        ffmpeg
-                        .concat(
-                            # Specify what you want from the streams (v for video and a for audio)
-                            mp4_vid['v'],
-                            mp4_aud['a'],
-                            # One video stream and one audio stream
-                            v=1,
-                            a=1
-                        )
-                        # Output is title of video with mp4 ending
-                        .output(os.path.join("content", f'{video.title}.mp4'))
-                        .run()
+            # Do the processing
+            try:
+                (
+                    ffmpeg
+                    .concat(
+                        # Specify what you want from the streams (v for video and a for audio)
+                        mp4_vid['v'],
+                        mp4_aud['a'],
+                        # One video stream and one audio stream
+                        v=1,
+                        a=1
                     )
-                except TypeError as e:
-                    print(f"An error occurred e 0: {e}")
-                except ffmpeg._run.Error as e:
-                    print(f"An error occurred e 1: {e}")
-        except Exception as e:
-            print(f"I couldn't download {interval_list[idx]} due to: {e}")
+                    # Output is title of video with mp4 ending
+                    .output(os.path.join("content", f'{video.title}.mp4'))
+                    .run()
+                )
+            except TypeError as e:
+                print(f"An error occurred e 0: {e}")
+            except ffmpeg._run.Error as e:
+                print(f"An error occurred e 1: {e}")
+    except Exception as e:
+        print(f"I couldn't download {link} due to: {e}")
 
 
 def download_pics(pics_links):

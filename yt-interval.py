@@ -1,12 +1,15 @@
 import os
 import zipfile
 from pathlib import Path
+import multiprocessing
 
 from flask import (Flask, make_response, redirect, render_template, request,
                    send_file, session, url_for)
                    
 from ParseInput import (download_interval, download_pics, download_whole,
                         make_time, parser)
+
+import time
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
@@ -27,7 +30,7 @@ def downloading():
     if request.method == 'POST':
         comments = request.form['comments']
         comments_2 = [comment.strip() for comment in comments.split('\n')]
-        # Only get the video part of the parsed file ([0])
+        # parsed[0] are videos, parsed[1] are pictures. made_time[0] are intervals, made_time[1] are whole videos.)
         parsed = parser(comments_2)
         made_time = make_time(parsed[0])
         session["intervals"] = made_time[0]
@@ -36,18 +39,24 @@ def downloading():
 
         if len(session["whole_clip"]) == 0 and len(session["intervals"]) == 0 and len(session["pics"]) == 0:
             return render_template('index.html', message="Please input a valid link: youtube.com/blabla, youtu.be/blabla some.thing/jpg")
-        return render_template('success.html')
+        else:
+            return render_template('success.html')
 
 
 @app.route('/waiting', methods=['POST'])
 def waiting():
-    # Downloads the media from content (no need to call if empty)
-    if len(session.get("intervals")) > 0:
-        download_interval(session.get('intervals'))
+    # Downloads the media from content using multiprocessing
+    num_workers = multiprocessing.cpu_count()
+
     if len(session.get("whole_clip")) > 0:
-        download_whole(session.get('whole_clip'))
+        with multiprocessing.Pool(processes=num_workers) as pool:
+            pool.map(download_whole, session.get('whole_clip'))
+    if len(session.get("intervals")) > 0:
+        with multiprocessing.Pool(processes=num_workers) as pool:
+            pool.map(download_interval, session.get('intervals'))
     if len(session.get("pics")) > 0:
         download_pics(session.get('pics'))
+
     return render_template("waiting.html", message=f"Done downloading all of your data.")
 
 
@@ -61,8 +70,7 @@ def done():
     # Returns the content of the media directory
     with zipfile.ZipFile('media.zip', 'w', zipfile.ZIP_DEFLATED) as zF:
         for video in os.listdir('content/'):
-            print(video)
-            if video == ".gitkeep":
+            if video == ".keep":
                 continue
             zF.write('content/'+video)
     return send_file('media.zip',
