@@ -1,15 +1,13 @@
+import multiprocessing
 import os
 import zipfile
 from pathlib import Path
-import multiprocessing
 
 from flask import (Flask, make_response, redirect, render_template, request,
                    send_file, session, url_for)
-                   
+
 from ParseInput import (download_interval, download_pics, download_whole,
                         make_time, parser)
-
-import time
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
@@ -55,7 +53,8 @@ def waiting():
         with multiprocessing.Pool(processes=num_workers) as pool:
             pool.map(download_interval, session.get('intervals'))
     if len(session.get("pics")) > 0:
-        download_pics(session.get('pics'))
+        with multiprocessing.Pool(processes=num_workers) as pool:
+            pool.map(download_pics, session.get('pics'))
 
     return render_template("waiting.html", message=f"Done downloading all of your data.")
 

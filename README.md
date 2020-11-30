@@ -28,6 +28,8 @@ pip install -r requirements.txt
 python yt-interval.py
 ```
 
+An environment variable called `SECRET_KEY` is required in order to get the flask app to run. You can put the key (a string) in your bash_profile or export one before launching the program.
+
 Downloading the whole video is significantly faster than downloading intervals. The reason behind this is in order to download intervals ffmpeg is used for transcoding the video stream. ffmpeg will use all the cores you have on your machine, so waiting times could be shorter for higher core count machines.
 
 
