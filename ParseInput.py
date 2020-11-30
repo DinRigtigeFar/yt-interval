@@ -1,31 +1,11 @@
 import datetime
 import os
 import re
-#import sys
 
 import ffmpeg
 import pafy
 import requests
 import youtube_dl
-
-
-"""def resource_path(relative_path):
-    
-    Get absolute path to resource, works for dev and for PyInstaller
-    Need it for path of ffmpeg
-    Pass the relative path to ffmpeg (ffmpeg/ffmpeg) in the download interval function
-    
-    try:
-        # This is the path to the script
-        base_path = sys.argv[0]
-        # Avoid the last 14 characters as these are the name of the program 'AutoYTDownload'
-        # ffmpeg folder is located in the same folder as the program (not in the program) therefore,
-        # the path is path to the parent folder
-        base_path = base_path[:-14]
-    except AttributeError:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)"""
 
 
 def parser(list_of_text):
@@ -96,7 +76,7 @@ def make_time(parsed_file):
     Else changes the time format into that
     Takes the output from the parser(filename) func
     """
-    
+
     # Different ways to say end
     end = ['slut', 'end', 'tail', 'finish',
            'finito', 'fin', 'done', 'finished']
@@ -166,18 +146,6 @@ def make_time(parsed_file):
     return list(zipped), whole_clip
 
 
-def save_link_time(return_list, path_to_download):
-    """
-    Function that saves the return_list from make_time to a file called yt_vids.txt
-    Optional, default False
-    """
-
-    # Opens a new file and writes lines to it and saves it at the spot provided
-    with open(os.path.join(path_to_download, "yt_vids.txt"), "w") as w:
-        w.write('\n'.join('{} {} {}'.format(
-            x[0], x[1][0], x[1][1]) for x in return_list))
-
-
 def download_whole(link):
     """
     Function that downloads a whole video when no interval is supplied
@@ -200,13 +168,13 @@ def download_interval(link):
     Function to download videos in specified intervals
     Takes a list (link) and a path as inputs
     """
-    
+
     end = ['slut', 'end', 'tail', 'finish',
            'finito', 'fin', 'done', 'finished']
 
     try:
         video = pafy.new(link[0], ydl_opts={
-                            'nocheckcertificate': True, "noplaylist": True})
+            'nocheckcertificate': True, "noplaylist": True})
         # Only downloads the video if the video hasn't been downloaded before
         if not os.path.exists(os.path.join("content", f"{video.title}.mp4")):
             video_s = video.getbestvideo()
@@ -251,12 +219,12 @@ def download_interval(link):
         print(f"I couldn't download {link} due to: {e}")
 
 
-def download_pics(pics_links):
+def download_pics(pics_link):
     """
     Function to download pictures from the input sequence
     """
 
-    for link in range(len(pics_links)):
-        r = requests.get(pics_links[link][0])
-        with open(os.path.join("content", f"{link}.jpg"), "wb") as dl:
-            dl.write(r.content)
+    r = requests.get(pics_link[0])
+    name = pics_link[0].split('/')[-1]
+    with open(os.path.join("content", f"{name}"), "wb") as dl:
+        dl.write(r.content)
