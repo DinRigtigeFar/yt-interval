@@ -1,5 +1,5 @@
 # yt-interval
-![landing_page](demo/landing_page.png)
+![landing_page](demo/Landing_page.png)
 ## Description
 Flask app to download YT videos in intervals or the whole video. The app will detect which you want and it is also possible to download a whole playlist (only for whole videos at the moment). It uses multiprocessing for increased speed.<br>
 
