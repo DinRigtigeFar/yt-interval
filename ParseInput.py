@@ -146,14 +146,18 @@ def make_time(parsed_file):
     return list(zipped), whole_clip
 
 
-def download_whole(link):
+def download_whole(link, playlist):
     """
     Function that downloads a whole video when no interval is supplied
     Downloaded to the same place where yt_vids is saved to (from save_link_time func)
     """
 
     SAVE_PATH = 'content'
-    ydl_opts = {"nocheckcertificate": True, "noplaylist": True,
+    if playlist:
+        ydl_opts = {"nocheckcertificate": True, "noplaylist": False,
+                'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s'}
+    else:
+        ydl_opts = {"nocheckcertificate": True, "noplaylist": True,
                 'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s'}
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
