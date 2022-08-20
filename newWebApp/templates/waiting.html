@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="../static/style.css" />
+    <link rel='shortcut icon' type='image/x-icon' href='../static/YTDL7.png' />
+    <title>Youtube downloader</title>
+  </head>
+  <body>
+    <div class="container">
+      <img src="../static/YTDL7.png" alt="YTDL logo" class="logo" />
+      {% if message %}
+      <p class="message">{{ message | safe }}</p>
+      {% else %}
+      <h3>Your videos are being downloaded at the moment</h3>
+      <body>
+        Please wait about 2-3 minutes while they're being processed. Then press the button that says press her blablabla!
+      </body>
+      {% endif %}
+      <form action="/waiting/done">
+        <input type="submit" value="Press here to download the media." class="btn">
+      </form>
+      <form action="/">
+        <input type="submit" value="Back to the front page" class="btn">
+      </form>
+    </div>
+    <div class="container">
+      <body>
+        Created by Christian Hviid Friis. <a href="https://github.com/DinRigtigeFar">Github</a>
+      </body>
+    </div>
+  </body>
+</html>
