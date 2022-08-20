@@ -25,7 +25,10 @@
             placeholder="Pasta all the text you want, but only youtube/youtu.be videos and links with 'jpg' in them will be parsed and downloaded. Time interval can be in the format: 00:00:00-99:99:99. The dash has to be there, but other than that the time can range from one (0) to eight characters (00:00:00)."
           ></textarea>
             <input type="checkbox" id="playlist" name="down_play" value="Yes">
-            <label for="down_play">Download whole playlist?</label><br><br>
+            <label for="down_play">Download whole playlist?</label><br>
+            <label for="number">How many cores to use?</label>
+            <input type="number" id="cores" name="core_amount" value={{cpu_cores}}>
+            <br><br>
         </div>
         <input type="submit" value="Process text" class="btn" />
       </form>

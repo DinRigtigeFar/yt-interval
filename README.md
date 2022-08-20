@@ -1,7 +1,9 @@
 # yt-interval
-![landing_page](demo/Landing_page.png)
+![landing_page](demo/landing_page.png)
 ## Description
-Flask app to download YT videos in intervals or the whole video. The app will detect which you want and it is also possible to download a whole playlist (only for whole videos at the moment). It uses multiprocessing for increased speed.<br>
+Flask app to download YT videos in intervals or the whole video, or both at the same time.
+It is also possible to download a playlist (only for whole videos at the moment).<br>
+It uses multiprocessing for increased speed with the option for you to specify how many threads to use. Default is all threads.<br>
 
 ## Input formats
 The app accepts different formats, but only one link per line. The intervals has to specified on the same line as the link and has to be separated by a space.<br>
@@ -13,28 +15,26 @@ youtube.com/blablabla start-4:02
 youtube.com/blablabla start-end
 youtube.com/blablabla
 ````
-The two latter examples will download the whole video as no interval is specified.
+The two last examples will download the whole video as no interval is specified.
 
 You can supply as many videos as you want, just seperate them by newline.
 It will also donwload pictures if you supply a link with '**jpg**' somewhere in it.
 
 When the download has finished you can either press the "**Download here**" button or locate your files in `yt-interval/content`. <br>
-Pressing the "**Back to the frontpage**" button will empty the content folder.
+Pressing the "**Back to the frontpage**" button will empty the content folder as a means to cleanup after use.
 
 ## Prerequisite
-The program requires ffmpeg which you can install using e.g. homebrew on Mac:
-```
-brew install ffmpeg
-```
-
+The program requires ffmpeg with AV1 support. [See how to compile it in this link](https://trac.ffmpeg.org/wiki/Encode/AV1).
+For ubuntu you can use this [script](https://gist.github.com/sparrc/026ed9958502072dda749ba4e5879ee3).
+TEST
 ## Installation
 Use a virtual environment:
 ```
 git clone https://github.com/DinRigtigeFar/yt-interval.git
 cd yt-interval
-python3 -m venv venv_yt
-. venv_yt/bin/activate
-pip install -r requirements.txt
+conda env create --file env.yml
+conda activate yt_down
+pip install -e git+git://github.com/mohamed-challal/pafy.git@develop#egg=pafy
 python yt-interval.py
 ```
 

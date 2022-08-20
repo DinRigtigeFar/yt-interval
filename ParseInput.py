@@ -5,7 +5,7 @@ import re
 import ffmpeg
 import pafy
 import requests
-import youtube_dl
+import yt_dlp
 
 
 def parser(list_of_text):
@@ -14,7 +14,7 @@ def parser(list_of_text):
     """
 
     # Youtube link regex
-    yt_link = re.compile(r"http(s)?:\/\/www\.youtu.*")
+    yt_link = re.compile(r"http(s)?:\/\/(www\.)?youtu.*")
     pron_link = re.compile(r".*pornhub.*")
     pic_link = re.compile(r"^http(s)?:\/\/.*jpg.*")
 
@@ -154,16 +154,18 @@ def download_whole(link, playlist):
 
     SAVE_PATH = 'content'
     if playlist:
-        ydl_opts = {"nocheckcertificate": True, "noplaylist": False,
-                'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s'}
+        ydl_opts = {"nocheckcertificate": True, "noplaylist": False, "ignoreerrors": True,
+                'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s',
+                'format': 'bestvideo[ext=mp4][vcodec!*=av01]+bestaudio[ext=m4a]'}
     else:
         ydl_opts = {"nocheckcertificate": True, "noplaylist": True,
-                'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s'}
-
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                'outtmpl': f'{SAVE_PATH}/%(title)s.%(ext)s',
+                'format': 'bestvideo[ext=mp4][vcodec!*=av01]+bestaudio[ext=m4a]'}
+                
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
             ydl.download([link])
-        except youtube_dl.utils.ExtractorError or youtube_dl.utils.DownloadError:
+        except yt_dlp.utils.ExtractorError or yt_dlp.utils.DownloadError:
             print(f"Couldn't download {link}")
 
 

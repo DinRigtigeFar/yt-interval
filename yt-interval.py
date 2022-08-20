@@ -21,14 +21,15 @@ def index():
     if os.path.exists('media.zip'):
         Path('./media.zip').unlink()
 
-    return render_template('index.html')
+    return render_template('index.html', cpu_cores=multiprocessing.cpu_count())
 
 
 @app.route('/downloading', methods=['POST', 'GET'])
 def downloading():
     if request.method == 'POST':
-        # Get the value of the checkbox
+        # Get the value from inputs
         session['download_playlist'] = request.form.get('down_play')
+        session['cores'] = request.form.get('core_amount')
         # Get the links
         comments = request.form['comments']
         comments_2 = [comment.strip() for comment in comments.split('\n')]
@@ -40,15 +41,21 @@ def downloading():
         session['pics'] = parsed[1]
 
         if len(session['whole_clip']) + len(session['intervals']) + len(session['pics']) == 0:
-            return render_template('index.html', message='Please input a valid link: youtube.com/blabla, youtu.be/blabla some.thing/jpg')
+            return render_template('index.html', cpu_cores=multiprocessing.cpu_count(), message='Please input a valid link: youtube.com/blabla, youtu.be/blabla some.thing/jpg')
         else:
             return render_template('success.html')
 
 
 @app.route('/waiting', methods=['POST'])
 def waiting():
-    # Downloads the media from content using multiprocessing
-    num_workers = multiprocessing.cpu_count()
+    cores = int(session.get('cores'))
+    # Downloads the media to content using multiprocessing
+    if cores > (num_workers := multiprocessing.cpu_count()):
+        num_workers = num_workers
+    elif cores < 1:
+        num_workers = 1
+    else:
+        num_workers = cores
     if session.get('download_playlist') == None:
         playlist = False
     else:
@@ -82,7 +89,7 @@ def done():
             zF.write('content/'+video)
     return send_file('media.zip',
                      mimetype='zip',
-                     attachment_filename='media.zip',
+                     download_name='media.zip',
                      as_attachment=True)
 
 
