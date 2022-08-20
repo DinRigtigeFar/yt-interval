@@ -24,8 +24,10 @@ When the download has finished you can either press the "**Download here**" butt
 Pressing the "**Back to the frontpage**" button will empty the content folder as a means to cleanup after use.
 
 ## Prerequisite
-The program requires ffmpeg with AV1 support. [See how to compile it in this link](https://trac.ffmpeg.org/wiki/Encode/AV1).
-For ubuntu you can use this [script](https://gist.github.com/sparrc/026ed9958502072dda749ba4e5879ee3).
+The program requires ffmpeg which you can install using e.g. homebrew on Mac:
+```
+brew install ffmpeg
+```
 
 ## Installation
 Use a virtual environment:
